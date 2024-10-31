@@ -59,7 +59,7 @@ function sendMessage(event) {
         const chatMessage = {
             sender: username,
             content: messageInput.value,
-            imgUrl: imageUrl.value,
+            imgUrl: imageUrl.value.trim(),
             type: 'CHAT'
         };
         stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
@@ -78,7 +78,6 @@ function onMessageReceived(payload) {
     if (message.type === 'JOIN') {
         messageElement.classList.add('event-message');
         message.content = message.sender + ' joined!';
-        message.imgUrl = 'https://logodix.com/logo/1891642.png'
     } else if (message.type === 'LEAVE') {
         messageElement.classList.add('event-message');
         message.content = message.sender + ' left!';
@@ -99,16 +98,18 @@ function onMessageReceived(payload) {
     }
 
     const textElement = document.createElement('p');
-    const imageElement = document.createElement('img')
     const messageText = document.createTextNode(message.content);
     textElement.appendChild(messageText);
-    imageElement.src = message.imgUrl
-    imageElement.width =150;
-    imageElement.height = 150;
-
     messageElement.appendChild(textElement);
-    messageElement.appendChild(imageElement)
     messageArea.appendChild(messageElement);
+    if(message.imgUrl !==''&& message.imgUrl!==null){
+    const imageElement = document.createElement('img')
+        imageElement.src = message.imgUrl
+        imageElement.width =150;
+        imageElement.height = 150;
+        messageElement.appendChild(imageElement)
+    }
+
     messageArea.scrollTop = messageArea.scrollHeight;
 }
 
