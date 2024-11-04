@@ -11,6 +11,7 @@ const connectingElement = document.querySelector('.connecting');
 
 let stompClient = null;
 let username = null;
+let topic = null;
 
 const colors = [
     '#2196F3', '#32c787', '#00BCD4', '#ff5652',
@@ -19,6 +20,7 @@ const colors = [
 
 function connect(event) {
     username = document.querySelector('#name').value.trim();
+    topic = document.querySelector('#topic').value.trim();
 
     if (username) {
         usernamePage.classList.add('hidden');
@@ -35,10 +37,10 @@ function connect(event) {
 
 function onConnected() {
     // Subscribe to the Public Topic
-    stompClient.subscribe('/topic/public', onMessageReceived);
+    stompClient.subscribe(`/topic/public/${topic}`, onMessageReceived);
 
     // Tell your username to the server
-    stompClient.send("/app/chat.addUser",
+    stompClient.send(`/app/chat.addUser/${topic}`,
         {},
         JSON.stringify({sender: username, type: 'JOIN'})
     )
@@ -62,7 +64,7 @@ function sendMessage(event) {
             imgUrl: imageUrl.value.trim(),
             type: 'CHAT'
         };
-        stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
+        stompClient.send(`/app/chat.sendMessage/${topic}`, {}, JSON.stringify(chatMessage));
         messageInput.value = '';
         imageUrl.value='';
     }
